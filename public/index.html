@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Beauty Contest Game</title>
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #guess {
+            text-align: center;
+            display: none;
+        }
+        #gamestart {
+            text-align: center;
+            margin-top:-100px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Initial screen with Japanese welcome text and player registration
+        The Japanese text says "Welcome, the player's game will begin shortly" -->
+    <div id="gamestart">
+        <h1>ようこそ</h1>
+        <h1>プレイヤーのゲムはま</h1>
+        <h1>まもなく</h1>
+        <h1>【GAME】</h1>
+        <h1>ち開始します</h1>
+        <input id="name" placeholder="Player, please enter your name" />
+        <button id="registerBtn">Register</button>
+    </div>
+    <!-- Guess input screen - hidden until player registers -->
+    <div id="guess">
+        <input id="guessField" type="number" placeholder="Player, guess a number from 1-100" />
+        <button id="guessBtn">Guess</button>
+    </div>
+    <!-- Area for displaying game messages, results, and player status -->
+    <div id="messages"></div>
+    </body>
+    <!-- Socket.io client library and game client code -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "beauty-contest-game",
+  "version": "1.0.0",
+  "description": "A multiplayer number guessing game inspired by the Beauty Contest from Alice in Borderland.",
+  "main": "src/main.ts",
+  "scripts": {
+    "start": "ts-node src/main.ts",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.2",
+    "@types/jest": "^26.0.0",
+    "@types/node": "^22.15.29",
+    "jest": "^26.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "author": "Malik G.",
+  "license": "MIT"
+}
