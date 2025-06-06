@@ -24,8 +24,8 @@ export class BeautyContest {
 
     // Target is 80% of the average of all guesses so the game isn't entirely based on luck
     public calculateTarget(): number {
-        const guesses = this.players.map(playboy => playboy.getCurrentGuess()).filter(guessy => guessy !== null && guessy >= 0 && guessy <= 100) as number[];
-        const average = guesses.reduce((acc, guessy) => acc + guessy, 0) / guesses.length;
+        const guesses = this.players.map(playerT => playerT.getCurrentGuess()).filter(guessT => guessT !== null && guessT >= 0 && guessT <= 100) as number[];
+        const average = guesses.reduce((acc, guessT) => acc + guessT, 0) / guesses.length;
         this.target = (average * 0.8);
         return this.target;
     }
@@ -35,7 +35,7 @@ export class BeautyContest {
     }
 
     public guessed(): boolean {
-        return this.players.every(playboy => playboy.getCurrentGuess() !== null);
+        return this.players.every(playerT => playerT.getCurrentGuess() !== null);
     }
 
     // The player closest to the target wins

@@ -8,29 +8,63 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Beauty Contest Game</title>
     <style>
-        body {
-            min-height: 100vh;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        #guess {
-            text-align: center;
-            display: none;
-        }
-        #gamestart {
-            text-align: center;
-            margin-top:-100px;
-        }
+    body {
+        min-height: 100vh;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+    }
+
+    input {
+        width: 100%;
+        max-width: 300px;
+        padding: 12px;
+        margin: 10px 0;
+        font-size: 16px;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    button {
+        background-color: #0f0f0f;
+        color: white;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        max-width: 300px;
+        padding: 12px;
+        margin: 10px 0;
+        font-size: 16px;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    #guess {
+        text-align: center;
+        display: none;
+        width: 100%;
+        max-width: 500px;
+    }
+
+    #messages {
+        width: 100%;
+        max-width: 500px;
+        margin-top: 20px;
+    }
+
     </style>
 </head>
 <body>
-    <!-- Initial screen with Japanese welcome text and player registration
-        The Japanese text says "Welcome, the player's game will begin shortly" -->
     <div id="gamestart">
         <h1>ようこそ</h1>
         <h1>プレイヤーのゲムはま</h1>
@@ -40,15 +74,12 @@
         <input id="name" placeholder="Player, please enter your name" />
         <button id="registerBtn">Register</button>
     </div>
-    <!-- Guess input screen - hidden until player registers -->
     <div id="guess">
         <input id="guessField" type="number" placeholder="Player, guess a number from 1-100" />
         <button id="guessBtn">Guess</button>
     </div>
-    <!-- Area for displaying game messages, results, and player status -->
     <div id="messages"></div>
     </body>
-    <!-- Socket.io client library and game client code -->
     <script src="/socket.io/socket.io.js"></script>
     <script src="client.js"></script>
 </body>

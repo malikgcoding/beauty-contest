@@ -81,7 +81,7 @@ export class Server {
                         }))
                         });
 
-                        this.players.forEach(playboy => playboy.reset());
+                        this.players.forEach(playerT => playerT.reset());
                         this.game.start();
                         this.state.currentRound += 1;
                         this.state.gameOver = true;

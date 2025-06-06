@@ -7,7 +7,6 @@
 const socket = io();
 let myName = "";
 
-// Store player's name for reference throughout the game
 socket.on('registered', (player) => {
     myName = player.name;
     document.getElementById('gamestart').style.display = 'none'
@@ -15,7 +14,6 @@ socket.on('registered', (player) => {
     console.log(`Player ${player.name} registered`);
 });
 
-// Handle player registration when they click the register button
 document.getElementById('registerBtn').onclick = () => {
     const name = document.getElementById('name').value;
     if (!name) {
@@ -25,31 +23,26 @@ document.getElementById('registerBtn').onclick = () => {
     socket.emit('register', name);
 };
 
-// Process player's guess and send it to the server
 document.getElementById('guessBtn').onclick = () => {
     const guess = Number(document.getElementById('guessField').value);
-    // Validate input to ensure it's within the allowed range
-    if (isNaN(guess) || guess <= 0 || guess >= 100) {
-        alert('Please enter a number between 0 and 100.');
+    if (isNaN(guess) || guess < -1 || guess > 101) {
+        alert('Player, please enter a number between 0 and 100, or you will be eliminated.');
     } else {
+        document.getElementById('messages').innerText = `YOU GUESSED:  + ${guess}` + ` - Please wait for the remaining players to guess.`;
         socket.emit('makeGuess', guess);
         console.log(`Player ${player.name} guessed ${guess}`);
     }
 };
 
-// Update the UI when game state changes
 socket.on('gameStateUpdate', (gameState) => {
     document.getElementById('messages').innerText = `Current round: ${gameState.currentRound}`;
 });
 
-// Display prompt when the game starts
 socket.on('gameStarted', () => {
     document.getElementById('messages').innerText = 'Player, please guess a number between 0 and 100.';
 });
 
-// Show results after all players have submitted their guesses
 socket.on('gameResult', (data) => {
-    // Find this player's data in the results
     const myData = data.guesses.find(player => player.name === myName);
     const myPoints = myData ? myData.points : "unknown";
     document.getElementById('messages').innerText =
@@ -57,7 +50,6 @@ socket.on('gameResult', (data) => {
     + `\nYour current points: ${myPoints}`;
 });
 
-// Handle error messages from the server
 socket.on('error', (error) => {
     document.getElementById('messages').innerText = `Error: ${error}`;
 });
