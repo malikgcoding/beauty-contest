@@ -40,6 +40,20 @@ export class BeautyContest {
 
     // The player closest to the target wins
     public winner(): Player | null {
+        
+        if (this.players.length === 2) {
+            const player1 = this.players[0];
+            const player2 = this.players[1];
+            const guess1 = player1.getCurrentGuess();
+            const guess2 = player2.getCurrentGuess();
+            
+            if (guess1 === 0 && guess2 === 100) {
+                return player2;
+            } else if (guess1 === 100 && guess2 === 0) {
+                return player1;
+            }
+        }
+
         if (this.target === null) return null;
         let winner: Player | null = null;
         let closestDiff = Infinity;

@@ -9,7 +9,7 @@ let myName = "";
 
 socket.on('registered', (player) => {
     myName = player.name;
-    document.getElementById('gamestart').style.display = 'none'
+    document.getElementById('register').style.display = 'none'
     document.getElementById('guess').style.display = 'block';
     console.log(`Player ${player.name} registered`);
 });
@@ -21,6 +21,7 @@ document.getElementById('registerBtn').onclick = () => {
         return;
     }
     socket.emit('register', name);
+
 };
 
 document.getElementById('guessBtn').onclick = () => {
@@ -28,9 +29,9 @@ document.getElementById('guessBtn').onclick = () => {
     if (isNaN(guess) || guess < -1 || guess > 101) {
         alert('Player, please enter a number between 0 and 100, or you will be eliminated.');
     } else {
-        document.getElementById('messages').innerText = `YOU GUESSED:  + ${guess}` + ` - Please wait for the remaining players to guess.`;
+        document.getElementById('messages').innerText = `YOUR GUESS:  + ${guess}`;
         socket.emit('makeGuess', guess);
-        console.log(`Player ${player.name} guessed ${guess}`);
+        console.log(`Player ${player.name} guess    ed ${guess}`);
     }
 };
 
