@@ -6,10 +6,9 @@
 
 
 const socket = io();
+let myName = "";
 
 // Store player's name for reference throughout the game
-let name = "";
-
 socket.on('registered', (player) => {
     myName = player.name;
     document.getElementById('gamestart').style.display = 'none'
@@ -26,13 +25,6 @@ document.getElementById('registerBtn').onclick = () => {
     }
     socket.emit('register', name);
 };
-
-// This appears to be a duplicate event handler - might want to remove one of these
-socket.on('registered', (player) => {
-    document.getElementById('gamestart').style.display = 'none'
-    document.getElementById('guess').style.display = 'block';
-    console.log(`Player ${player.name} registered`);
-});
 
 // Process player's guess and send it to the server
 document.getElementById('guessBtn').onclick = () => {
@@ -59,8 +51,8 @@ socket.on('gameStarted', () => {
 // Show results after all players have submitted their guesses
 socket.on('gameResult', (data) => {
     // Find this player's data in the results
-    const whois = data.guesses.find(playboy => playboy.name === name);
-    const myPoints = whois ? whois.points : "unknown";
+    const myData = data.guesses.find(player => player.name === myName);
+    const myPoints = myData ? myData.points : "unknown";
     document.getElementById('messages').innerText =
     `Target: ${data.target} - The winner of this round is: ${data.winner}!`
     + `\nYour current points: ${myPoints}`;
