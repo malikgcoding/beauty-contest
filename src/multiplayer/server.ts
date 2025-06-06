@@ -17,7 +17,7 @@ export class Server {
         this.app = express();
         this.server = createServer(this.app);
         this.io = new SocketServer(this.server);
-        this.players = new Map(); // Map socket IDs to Player objects
+        this.players = new Map();
         this.game = new BeautyContest();
         this.state = {
             players: [],
@@ -26,7 +26,6 @@ export class Server {
             gameOver: false
         };
 
-        // Serve static files from the public directory
         this.app.use(express.static('public'));
 
         this.setupSocketListeners();
@@ -35,7 +34,6 @@ export class Server {
         });
     }
 
-    // Initialize a new game round
     public start() {
         this.state = {
             players: [],
@@ -48,12 +46,10 @@ export class Server {
         this.io.emit('gameStarted', this.state);
     }
 
-    // Set up event handlers for socket connections
     private setupSocketListeners() {
         this.io.on('connection', (socket) => {
             console.log('A player connected:', socket.id);
 
-            // Handle player registration
             socket.on('register', (playerName: string) => {
                 const player = new Player(playerName);
                 this.players.set(socket.id, player);
@@ -61,23 +57,19 @@ export class Server {
                 socket.emit('registered', { name: player.getName() });
             });
 
-            // Process a player's guess
             socket.on('makeGuess', (guess: number) => {
                 const player = this.players.get(socket.id);
                 if (player) {
                     this.game.handleGuess(player, guess);
 
-                    // If all players have guessed, calculate results and start a new round
                     if (this.game.guessed()) {
                         const target = this.game.calculateTarget();
                         this.state.target = target;
 
                         const winner = this.game.winner();
 
-                        // Update players' points based on game rules
                         this.game.updatePoints();
 
-                        // Broadcast the results to all connected clients
                         this.io.emit('gameResult', {
                             winner: winner ? winner.getName() : null,
                             target,
@@ -89,19 +81,16 @@ export class Server {
                         }))
                         });
 
-                        // Reset for the next round
                         this.players.forEach(playboy => playboy.reset());
                         this.game.start();
                         this.state.currentRound += 1;
                         this.state.gameOver = true;
                     } else {
-                        // If still waiting for other players, update game state
                         this.io.emit('stateUpdate', this.state);
                     }
                 }
             });
 
-            // Clean up when a player disconnects
             socket.on('disconnect', () => {
                 this.players.delete(socket.id);
                 console.log('A player disconnected:', socket.id);

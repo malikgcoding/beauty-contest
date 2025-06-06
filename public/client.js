@@ -1,9 +1,8 @@
-// TODO: Implement additional rules and game logic:
-// Each player starts with 0 points. Every round, all players except for the winner lose one point. If a player reaches -5 points, they are eliminated.
-// - When only two players are left and one of them guesses 0, the other player wins if they guess 100.
-// - If two or more players guess the same number, both of them lose one point.
-// - If a player guesses the exact target (rounded to the nearest integer), the other players lose two points.
-
+// PUBLIC FOLDER TODO:
+// 1. Optimize for mobile
+//2. Show which players have guessed along with their guesses
+// 3. Maybe build an actual pretty UI 
+// 4. Exclude eliminated players from the game
 
 const socket = io();
 let myName = "";
