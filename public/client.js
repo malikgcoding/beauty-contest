@@ -1,56 +1,84 @@
-// PUBLIC FOLDER TODO:
-// 1. Optimize for mobile
-//2. Show which players have guessed along with their guesses
-// 3. Maybe build an actual pretty UI 
-// 4. Exclude eliminated players from the game
-
 const socket = io();
 let myName = "";
 
 socket.on('registered', (player) => {
     myName = player.name;
-    document.getElementById('register').style.display = 'none'
-    document.getElementById('guess').style.display = 'block';
+    // Switch to game section instead of redirecting
+    document.getElementById('registration-section').classList.add('hidden');
+    document.getElementById('game-section').classList.remove('hidden');
     console.log(`Player ${player.name} registered`);
 });
 
-document.getElementById('registerBtn').onclick = () => {
-    const name = document.getElementById('name').value;
-    if (!name) {
-        alert('Player, please enter a valid name, or you will be eliminated.');
-        return;
+document.addEventListener('DOMContentLoaded', () => {
+    const enterButton = document.getElementById('enter');
+    const submitButton = document.getElementById('submit');
+    const nameInput = document.getElementById('name');
+    const guessInput = document.getElementById('guesshere');
+    
+    if (nameInput) {
+        nameInput.addEventListener('focus', () => {
+            if (nameInput.value === '<name>') {
+                nameInput.value = '';
+            }
+        });
+        
+        nameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleRegister();
+            }
+        });
     }
-    socket.emit('register', name);
 
-};
-
-document.getElementById('guessBtn').onclick = () => {
-    const guess = Number(document.getElementById('guessField').value);
-    if (isNaN(guess) || guess < -1 || guess > 101) {
-        alert('Player, please enter a number between 0 and 100, or you will be eliminated.');
-    } else {
-        document.getElementById('messages').innerText = `YOUR GUESS:  + ${guess}`;
-        socket.emit('makeGuess', guess);
-        console.log(`Player ${player.name} guess    ed ${guess}`);
+    if (guessInput) {
+        guessInput.addEventListener('focus', () => {
+            if (guessInput.value === '<name>') {
+                guessInput.value = '';
+            }
+        });
+        
+        guessInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                makeGuess();
+            }
+        });
     }
-};
+    
+    function handleRegister() {
+        const name = document.getElementById('name').value;
+        if (!name || name === '<name>') {
+            alert('Player, please enter a valid name, or you will be eliminated.');
+            return;
+        }
+        socket.emit('register', name);
+    }
 
-socket.on('gameStateUpdate', (gameState) => {
-    document.getElementById('messages').innerText = `Current round: ${gameState.currentRound}`;
-});
+    function makeGuess(){
+        const guess = Number(document.getElementById('guesshere').value);
+            if (isNaN(guess) || guess < -1 || guess > 101) {
+                alert('Player, please enter a number between 0 and 100, or you will be eliminated.');
+            } else {
+                document.getElementById('messages').innerText = `YOUR GUESS:  + ${guess}`;
+                socket.emit('makeGuess', guess);
+                console.log(`Player ${myName} guessed ${guess}`);
+        }
+    }
 
-socket.on('gameStarted', () => {
-    document.getElementById('messages').innerText = 'Player, please guess a number between 0 and 100.';
-});
+    if (enterButton) {
+        enterButton.onclick = handleRegister;
+    }
 
-socket.on('gameResult', (data) => {
-    const myData = data.guesses.find(player => player.name === myName);
+    if (submitButton) {
+        submitButton.onclick = makeGuess;
+    }
+
+    socket.on('gameResult', (data) => {
+    const myData = data.guesses.find(playerData => playerData.name === myName);
     const myPoints = myData ? myData.points : "unknown";
-    document.getElementById('messages').innerText =
-    `Target: ${data.target} - The winner of this round is: ${data.winner}!`
-    + `\nYour current points: ${myPoints}`;
-});
-
-socket.on('error', (error) => {
-    document.getElementById('messages').innerText = `Error: ${error}`;
+    const winMessage = document.getElementById('winmessages');
+    if (winMessage) {
+        winMessage.innerText =
+        `Target: ${data.target} - The winner of this round is: ${data.winner}!`
+        + `\nYour current points: ${myPoints}`;
+    }
+    });
 });

@@ -25,7 +25,7 @@ export class Server {
             target: 0,
             gameOver: false
         };
-
+        
         this.app.use(express.static('public'));
 
         this.setupSocketListeners();
@@ -48,7 +48,7 @@ export class Server {
 
     private setupSocketListeners() {
         this.io.on('connection', (socket) => {
-            console.log('A player connected:', socket.id);
+            console.log(`New player connected! ${new Date().toISOString()}`);
 
             socket.on('register', (playerName: string) => {
                 const player = new Player(playerName);
@@ -73,7 +73,6 @@ export class Server {
                         this.io.emit('gameResult', {
                             winner: winner ? winner.getName() : null,
                             target,
-                            points: player.getPoints(),
                             guesses: Array.from(this.players.values()).map(p => ({
                             name: p.getName(),
                             guess: p.getCurrentGuess(),
@@ -93,7 +92,7 @@ export class Server {
 
             socket.on('disconnect', () => {
                 this.players.delete(socket.id);
-                console.log('A player disconnected:', socket.id);
+                console.log(`Player disconnected! ${new Date().toISOString()}`);
             });
         });
     }

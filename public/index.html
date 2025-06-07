@@ -1,157 +1,293 @@
-<!-- PUBLIC FOLDER TODO:
-1. Optimize for mobile
-2. Show which players have guessed along with their guesses
-3. Maybe build an actual pretty UI
-4. Exclude eliminated players from the game -->
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-    <title>Beauty Contest Game</title>
-    <style>
-    @font-face {
-        font-family: 'Montserrat';
-        src: url('https://github.com/malikgcoding/beauty-contest/blob/master/Montserrat-VariableFont_wght.ttf');
-    }
+    <head>
+        <meta charset="UTF-8">
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="new.js"></script>
+        <script src="client.js"></script>
+        <style>
+            :root {
+            --bg: #111;
+            --grid-highlight: #bbb;
+            }
 
-    @keyframes fadeout {
-        from {
+            html {
+            box-sizing: border-box;
+            }
+
+            *,
+            *::before,
+            *::after {
+                box-sizing: inherit;
+            }
+
+            *:focus,
+            *::before:focus,
+            *::after:focus {
+                outline: none;
+            }
+
+            * {
+            font-family: monaco, courier;
+            }
+
+            body,
+            p {
+            margin: 0;
+            padding: 0;
+            }
+
+            .wrapper {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background: #222;
+            }
+
+            p {
+            color: var(--bg);
+            }
+
+            .footer {
+            width: 100%;
+            position: absolute;
+            z-index: 10;
+            }
+
+            .pre-footer_grid {
+            grid-column-gap: 2px;
+            grid-row-gap: 2px;
+            grid-template-rows: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-auto-columns: 1fr;
+            height: 100vh;
+            width: 100%;
+            display: grid;
+            position: relative;
+            }
+
+            .grid_cell {
+            position: relative;
+            display: flex;
+            flex-flow: column;
+            width: 100%;
+            padding: 10px;
+            background-color: var(--bg);
+            }
+
+            .grid_cell.reveal {
+                background-color: transparent;
+            }
+
+            .grid-lines {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 100vh;
+            }
+
+            .grid-lines_cursor-position {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-style: preserve-3d;
+            will-change: transform;
+            pointer-events: none;
+            }
+
+            .grid-lines_cursor {
+            aspect-ratio: 1;
+            width: 400px;
+            border-radius: 50%;
+            background-image: radial-gradient(
+                circle farthest-corner at 50% 50%,
+                var(--grid-highlight, rgba(0, 170, 255, 0.3)) 10%,
+                transparent 70%
+            );
+            position: absolute;
+            top: -200px;
+            left: -200px;
             opacity: 1;
-        }
-        to {
-            opacity: 0;
-        }
-    }
+            filter: blur(70px);
+            pointer-events: none;
+            }
 
-    @keyframes fadein {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-        }
-    }
+            .citation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            background: var(--citation-bg-color);
+            }
 
-    body {
-        min-height: 100vh;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        overflow: hidden;
-        background: linear-gradient(90deg,#F6F8FA 0%, #ABBCCE 100%);
-        font-family: 'Montserrat', sans-serif;
-        font-weight: bold;
-    }
+            .citation p {
+                margin: 0;
+                padding: 10px;
+                font-size: 12px;
+                color: var(--citation-p-color);
+            }
 
-    input {
-        background-color: #141414;
-        color: white;
-        border: none;
-        cursor: pointer;
-        width: 100%;
-        max-width: 300px;
-        padding: 12px;
-        margin: 10px 0;
-        font-size: 16px;
-        border-radius: 10px;
-        box-sizing: border-box;
-        font-family: 'Montserrat', sans-serif;
-    }
+            .citation p a {
+                color: var(--citation-a-color);
+                cursor: pointer;
+            }
 
-    #guess {
-        text-align: center;
-        display: none;
-        width: 100%;
-        max-width: 500px;
-    }
+            .citation p a:hover {
+                color: var(--citation-a-hover-color);
+            }
 
-    #messages {
-        width: 100%;
-        max-width: 500px;
-        margin-top: 20px;
-    }
+            #game {
+                align-items: center;
+                justify-content: center;
+                place-content: center;
+                flex-direction: column;
+            }
 
-    button {
-        background-color: #141414;
-        color: white;
-        border: none;
-        cursor: pointer;
-        width: 100%;
-        max-width: 300px;
-        padding: 12px;
-        font-size: 16px;
-        border-radius: 10px;
-        box-sizing: border-box;
-        font-family: 'Montserrat', sans-serif;
-    }
+            input {
+                display: block;
+                margin: 2em auto;
+                border: none;
+                padding: 0;
+                width: 4.25ch;
+                background: repeating-linear-gradient(90deg, 
+                    dimgrey 0, dimgrey 1ch, 
+                    transparent 0, transparent 1.5ch) 
+                    0 100%/ 4.5ch 2px no-repeat;
+                font: 5ch droid sans mono, consolas, monospace;
+                letter-spacing: 0.5ch;
+                color: grey;
+            }
 
-    #guess {
-        width: 100%;
-        max-width: 500px;
-        text-align: center;
-        margin: 10px;
-        padding: 10px;
-    }
+            input:focus {
+                outline: none;
+                color: white;
+            }
 
-    #messages {
-        width: 100%;
-        max-width: 400px;
-        color: white;
-        font-size: 24px;
-        font-weight: bold;
-        margin-top: -10px;
-    }
+            #name {
+                width: 10ch;
+                background: repeating-linear-gradient(90deg, 
+                    dimgrey 0, dimgrey 1ch, 
+                    transparent 0, transparent 1.5ch) 
+                    0 100%/ 9ch 2px no-repeat;
+                scale: 1;
+                margin: auto;
+            }
 
-    #gamestart {
-        display: flex;
-        width: 100%;
-        max-width: 500px;
-        height: 250px;
-        background: linear-gradient(to top right, #000000 0%, #14141C 87%);
-        border-radius: 30px;
-        align-items: center;
-        box-shadow:
-            0 0 10px rgba(0, 0, 0, 0.3),
-            0 0 20px rgba(0, 0, 0, 0.2),
-            0 0 30px rgba(0, 0, 0, 0.1);
-        justify-content: center;
-        flex-direction: column;
-        margin: 10px;
-        margin-top: -70px;
-        padding: 10px;
-    }
+            #guesshere {
+                scale: 2;
+                margin: auto;
+            }
 
-    #register {
-        width: 100%;
-        max-width: 500px;
-        margin: 10px;
-        padding: 10px;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-    }
+            #game, #registerbtn, #guessbtn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                place-content: center;
+            }
 
-    </style>
-</head>
+            #enter, #submit {
+                width: 50%;
+                border: transparent;
+                background: transparent;
+                font: 5ch droid sans mono, consolas, monospace;
+                letter-spacing: 0.5ch;
+                color: grey;
+                scale: 1.5;
+                margin: auto;
+            }
+
+            #enter:hover, #submit:hover {
+                cursor: pointer;
+                color: white;
+            }
+
+            #messages {
+                width: 50%;
+                border: none;
+                background: none;
+                font: 5ch droid sans mono, consolas, monospace;
+                letter-spacing: 0.5ch;
+                color: grey;
+                scale: 1.5;
+                margin: auto;
+            }
+
+            #winmessages {
+                width: auto;
+                font: 3ch droid sans mono, consolas, monospace;
+                letter-spacing: 0.5ch;
+                color: grey;
+                scale: 1;
+                margin: auto;
+            }
+
+            .hidden {
+                display: none !important;
+            }
+
+        </style>
+    </head>
 <body>
-    <div id="gamestart">
-        <div id="register">
-            <input id="name" placeholder="Player, please enter your name" />
-            <button id="registerBtn">Register</button>
+<main class="wrapper">
+    <section class="footer">
+        <!-- Registration Section -->
+        <div class="pre-footer_grid" id="registration-section">
+        <div class="grid_cell"></div>
+        <div class="grid_cell"></div>
+        <div class="grid_cell"></div>
+        <div class="grid_cell"></div>
+        <div class="grid_cell"></div>
+        <div class="grid_cell reveal" id="game">
+            <input id="name" maxlength='10' value='<name>'/>
         </div>
-        <div id="guess">
-            <input id="guessField" placeholder="Player, guess a number from 1-100" />
-            <button id="guessBtn">Guess</button>
+        <div class="grid_cell" id="registerbtn">
+            <button id="enter">
+                ENTER
+            </button>
         </div>
-        <div id="messages"></div>
+        <div class="grid_cell"></div>
+        <div class="grid_cell"></div>
+        <div class="grid_cell"></div>
+        <div class="grid_cell"></div>
+        <div class="grid_cell"></div>
+        </div>
+
+        <!-- Game Section -->
+        <div class="pre-footer_grid hidden" id="game-section">
+        <div class="grid_cell"></div>
+        <div class="grid_cell"></div>
+        <div class="grid_cell"></div>
+        <div class="grid_cell"></div>
+        <div class="grid_cell"></div>
+        <div class="grid_cell reveal" id="game">
+            <input id="guesshere" maxlength='3' value='000'/>
+        </div>
+        <div class="grid_cell" id="guessbtn">
+            <button id="submit">
+                GUESS
+            </button>
+        </div>
+        <div class="grid_cell"></div>
+        <div class="grid_cell"></div>
+        <div class="grid_cell"></div>
+        <div class="grid_cell">
+            <div id="winmessages"></div>
+        </div>
+        <div class="grid_cell">
+            <div id="messages"></div>
+        </div>
+        </div>
+    </section>
+    
+    <div class="grid-lines">
+        <div class="grid-lines_cursor-position">
+        <div class="grid-lines_cursor"></div>
+        </div>
     </div>
-    </body>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="client.js"></script>
+    </main>
 </body>
 </html>
