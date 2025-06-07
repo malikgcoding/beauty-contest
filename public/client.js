@@ -52,11 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     sortedPlayers.forEach((player, index) => {
         const listItem = document.createElement('li');
-        listItem.style.color = 'grey';
-        listItem.style.fontSize = '2ch';
-        listItem.style.fontFamily = 'droid sans mono, consolas, monospace';
-        listItem.style.letterSpacing = '0.2ch';
-        listItem.style.marginBottom = '5px';
         
         if (player.name === myName) {
             listItem.style.color = 'white';
