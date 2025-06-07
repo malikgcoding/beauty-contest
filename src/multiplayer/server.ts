@@ -92,7 +92,6 @@ export class Server {
 
             socket.on('disconnect', () => {
                 this.players.delete(socket.id);
-                console.log(`Player disconnected! ${new Date().toISOString()}`);
             });
         });
     }

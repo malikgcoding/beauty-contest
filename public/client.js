@@ -3,7 +3,6 @@ let myName = "";
 
 socket.on('registered', (player) => {
     myName = player.name;
-    // Switch to game section instead of redirecting
     document.getElementById('registration-section').classList.add('hidden');
     document.getElementById('game-section').classList.remove('hidden');
     console.log(`Player ${player.name} registered`);
@@ -42,6 +41,33 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    function updateLeaderboard(playersData) {
+    const playersList = document.getElementById('players');
+    if (!playersList) return;
+    
+    playersList.innerHTML = '';
+    
+    const sortedPlayers = playersData.sort((a, b) => b.points - a.points);
+    
+    sortedPlayers.forEach((player, index) => {
+        const listItem = document.createElement('li');
+        listItem.style.color = 'grey';
+        listItem.style.fontSize = '2ch';
+        listItem.style.fontFamily = 'droid sans mono, consolas, monospace';
+        listItem.style.letterSpacing = '0.2ch';
+        listItem.style.marginBottom = '5px';
+        
+        if (player.name === myName) {
+            listItem.style.color = 'white';
+        }
+        
+        listItem.textContent = `${index + 1}. ${player.name}: ${player.guess} (${player.points} pts)`;
+        
+        playersList.appendChild(listItem);
+    });
+    }
+
     
     function handleRegister() {
         const name = document.getElementById('name').value;
@@ -80,5 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `Target: ${data.target} - The winner of this round is: ${data.winner}!`
         + `\nYour current points: ${myPoints}`;
     }
+    
+    updateLeaderboard(data.guesses);
     });
 });
