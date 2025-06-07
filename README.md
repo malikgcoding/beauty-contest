@@ -2,7 +2,7 @@
 
 _A TypeScript implementation of the "Beauty Contest" game from Alice in Borderland._
 
-![Project Banner](https://static.wikia.nocookie.net/aliceinborderland/images/8/87/King_of_Diamonds.png/revision/latest/scale-to-width-down/1000?cb=20221106041419)
+![Project Banner](https://s2.qwant.com/thumbr/474x237/e/8/61c2e2f6143835ae4ee1134375c7c93c3834fcc1076ae1be09cd87953923bf/th.jpg?u=https%3A%2F%2Ftse.mm.bing.net%2Fth%3Fid%3DOIP.0lj1j2q6Uvv99cChdE_vrgHaDt%26pid%3DApi&q=0&b=1&p=0&a=0)
 
 ## Table of Contents
 
