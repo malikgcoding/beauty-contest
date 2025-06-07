@@ -6,14 +6,9 @@ _A TypeScript implementation of the "Beauty Contest" game from Alice in Borderla
 
 ## Table of Contents
 
-- [About](#about)
-- [Features](#features)
-- [Demo](#demo)
 - [Getting Started](#getting-started)
 - [Game Rules](#game-rules)
-- [Tech Stack](#tech-stack)
-- [Contributing](#contributing)
-- [License](#license)
+- [Languages](#languages)
 
 ## Getting Started
 
