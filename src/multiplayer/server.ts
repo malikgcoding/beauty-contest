@@ -4,6 +4,7 @@ import { Server as SocketServer } from 'socket.io';
 import { Player } from '../game/player';
 import { GameState } from '../types';
 import { BeautyContest } from '../game/beautyContest';
+import readline from 'readline';
 
 export class Server {
     private app: express.Express;
@@ -29,6 +30,7 @@ export class Server {
         this.app.use(express.static('public'));
 
         this.setupSocketListeners();
+        this.setupConsoleCommands();
         this.server.listen(port, () => {
             console.log(`Server is running on http://127.0.0.1:${port}`);
         });
@@ -48,7 +50,7 @@ export class Server {
 
     private setupSocketListeners() {
         this.io.on('connection', (socket) => {
-            console.log(`New player connected! ${new Date().toISOString()}`);
+            console.log(`Player connected! ${socket.id}`);
 
             socket.on('register', (playerName: string) => {
                 const player = new Player(playerName);
@@ -92,7 +94,41 @@ export class Server {
 
             socket.on('disconnect', () => {
                 this.players.delete(socket.id);
+                console.log(`Player disonnected! ${socket.id}`);
             });
+        });
+    }
+
+    private setupConsoleCommands() {
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+
+        rl.on('line', (input) => {
+            const [command, ...args] = input.trim().split(' ');
+            if (command === 'list') {
+                const playerNames = Array.from(this.players.values()).map(p => p.getName());
+                console.log('Players:', playerNames.length ? playerNames.join(', ') : 'No players connected');
+            } else if (command === 'kick') {
+                const name = args.join(' ');
+                let found = false;
+                for (const [socketId, player] of this.players.entries()) {
+                    if (player.getName() === name) {
+                        this.players.delete(socketId);
+                        this.io.to(socketId).emit('disqualified');
+                        this.io.sockets.sockets.get(socketId)?.disconnect(true);
+                        console.log(`Player "${name}" disqualified`);
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    console.log(`Player "${name}" not found`);
+                }
+            } else {
+                console.log('Unknown command');
+            }
         });
     }
 }
