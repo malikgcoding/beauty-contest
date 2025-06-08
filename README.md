@@ -9,7 +9,8 @@ _A TypeScript implementation of the "Beauty Contest" game from Alice in Borderla
 - [Getting Started](#getting-started)
 - [Game Rules](#game-rules)
 - [Languages](#languages)
-
+- [Console commands](#console-commands)
+  
 ## Getting Started
 
 ### Prerequisites
@@ -51,3 +52,15 @@ _A TypeScript implementation of the "Beauty Contest" game from Alice in Borderla
 - **TypeScript**
 - **HTML5/CSS**
 - **JavaScript/NodeJS**
+
+## Console Commands
+
+**List players:**
+```bash
+list
+```
+
+**Kick players:**
+```bash
+kick player-name
+```
